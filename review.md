@@ -19,8 +19,6 @@ Number( ):
 如果字符串中包含除上述格式之外的字符，则将其他转换成NaN.
 （6）如果是对象，则调用对象的valueOf()方法，然后依照前面的规则转换返回的值。如果转换的结果是NaN，则调用的对象的toString()方法，然后再次依照前面的规则转换返回的字符串值。
 
-
-
 parseInt( )：
 
 parseInt()函数可以将字符串转换成一个整数，与Number()函数相比，parseInt()函数不仅可以解析纯数字字符串，也可以解析以数字开头的部分数字字符串(非数字部分字符串在转换过程中会被去除)。
@@ -30,8 +28,6 @@ parseInt()函数可以将字符串转换成一个整数，与Number()函数相�
 （4）如果字符串以”0”开头且后跟数字字符，就会将其当作一个八进制整数。
 （5）parseInt()函数增加了第二参数用于指定转换时使用的基数（即多少进制）。
 （6）当parseInt()函数所解析的是浮点数字符串时，取整操作所使用的方法为“向下取整”。
-
-
 
 parseFloat( ):
 
@@ -49,7 +45,7 @@ Math.round(num)： num 四舍五入取整
 
 Math.floor(num)：num向下取整，即返回 num 的整数部分。也可以使用 parseInt()方法代替。
 
-```
+```javascript
 //取得[n,m]范围随机浮点数
 function fullClose(n,m) {
    var result = Math.random()*(m+1-n)+n;
@@ -60,7 +56,7 @@ function fullClose(n,m) {
 }
 ```
 
-```
+```javascript
 //取得(n,m)范围随机浮点数
 function fullOpen(n,m) {
    var result = Math.random()*(m-n)+n;
@@ -71,7 +67,7 @@ function fullOpen(n,m) {
 }
 ```
 
-```
+```javascript
 //取得(n,m]范围随机浮点数
 function leftOpen(n,m) {
    var result = Math.random()*(m-n+1)+n-1;
@@ -249,7 +245,7 @@ https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy
 
 3. Vue.js：使用代理 https://www.cnblogs.com/lihaohua/p/12372267.html
 
-```
+```javascript
 // vue.config.js
 devServer: {
     proxy: {  //配置跨域
@@ -490,6 +486,223 @@ function throttle(fn, delay) {
 ### 20、ASCII，Unicode 和 UTF-8
 
 http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html
+
+Unicode 和 UTF-8的关系：UTF-8 是 Unicode 的实现方式之一
+
+### 21、JS的事件循环（event loop）
+
+因为 JS 是单线程的，在代码执行的时候，通过将不同函数的执行上下文压入执行栈中保证代码的有序执行。在执行同步代码的时候，如果遇到了异步事件，JS 引擎并不会一直等待其返回结果，而是会将这个事件挂起，继续执行执行栈中的其他任务。当异步事件执行完毕后，再将异步事件对应的回调加入到与当前执行栈中不同的另一个任务队列中等待执行。任务队列可以分为宏任务对列和微任务对列，当当前执行栈中的事件执行完毕后，JS 引擎首先会判断微任务对列中是否有任务可以执行，如果有就将微任务队首的事件压入栈中执行。当微任务对列中的任务都执行完成后再去判断宏任务对列中的任务。
+
+微任务包括了 promise 的回调、node 中的 process.nextTick 、对 Dom 变化监听的 MutationObserver。
+
+宏任务包括了 script 脚本的执行、setTimeout ，setInterval ，setImmediate 一类的定时事件，还有如 I/O 操作、UI 渲染等。
+
+总结：
+
+在环境中有个执行栈，事件循环像个轮子一样会取出微任务队列里的任务压到执行栈内，微任务队列无任务后，取出宏任务队列里的任务压到执行栈内。
+
+微/宏任务队列的内的任务来源是在主线程执行过程中的一些异步任务。
+
+<img src="https://user-gold-cdn.xitu.io/2018/5/16/163677dd81721ac8?imageslim" alt="img" style="zoom:67%;" />
+
+### 22、深浅拷贝
+
+1. 概念：
+
+   浅拷贝：将一个对象的属性值复制到另一个对象，如果有的属性的值为引用类型的话，那么会将这个引用的地址复制给对象，因此两个对象会有同一个引用类型的引用。浅拷贝可以使用  Object.assign 和展开运算符来实现。
+
+   深拷贝：如果遇到属性值为引用类型的时候，新建一个该引用类型并将对应的值复制给它，因此对象获得的一个新的引用类型而不是一个原有类型的引用。
+
+2. 实现：
+
+   ```javascript
+   // 浅拷贝的实现;
+   function shallowCopy(object) {
+     // 只拷贝对象
+     if (!object || typeof object !== &quot;object&quot;) return;
+     // 根据 object 的类型判断是新建一个数组还是对象
+     let newObject = Array.isArray(object) ? [] : {};
+     // 遍历 object，并且判断是 object 的属性才拷贝
+     for (let key in object) {
+       if (object.hasOwnProperty(key)) {
+         newObject[key] = object[key];
+       }
+     }
+     return newObject;
+   }
+   
+   // 深拷贝的实现;
+   function deepCopy(object) {
+     if (!object || typeof object !== &quot;object&quot;) return;
+     let newObject = Array.isArray(object) ? [] : {};
+     for (let key in object) {
+       if (object.hasOwnProperty(key)) {
+         newObject[key] =
+           typeof object[key] === &quot;object&quot; ? deepCopy(object[key]) : object[key];
+       }
+     }
+     return newObject;
+   }
+   ```
+
+### 23、箭头函数
+
+[https://es6.ruanyifeng.com/#docs/function#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0](https://es6.ruanyifeng.com/#docs/function#箭头函数)
+
+注意事项：
+
+由于箭头函数使得`this`从“动态”变成“静态”，下面两个场合不应该使用箭头函数。
+
+第一个场合是定义对象的方法，且该方法内部包括`this`。
+
+```javascript
+const cat = {
+  lives: 9,
+  jumps: () => {
+    this.lives--;
+  }
+}
+```
+
+上面代码中，`cat.jumps()`方法是一个箭头函数，这是错误的。调用`cat.jumps()`时，如果是普通函数，该方法内部的`this`指向`cat`；如果写成上面那样的箭头函数，使得`this`指向全局对象，因此不会得到预期结果。这是因为对象不构成单独的作用域，导致`jumps`箭头函数定义时的作用域就是全局作用域。
+
+*** 注意区分Node.js环境与浏览器环境，在Node.js中，this指向global，为{}，即使提前设置了全局变量也取不出；在浏览器中，正正指向Window对象，如果在前面 var 了一个变量，对象里的箭头函数里的this可以输出全局中 var 的变量。
+
+第二个场合是需要动态`this`的时候，也不应使用箭头函数。
+
+```javascript
+var button = document.getElementById('press');
+button.addEventListener('click', () => {
+  this.classList.toggle('on');
+});
+```
+
+上面代码运行时，点击按钮会报错，因为`button`的监听函数是一个箭头函数，导致里面的`this`就是全局对象。如果改成普通函数，`this`就会动态指向被点击的按钮对象。
+
+另外，如果函数体很复杂，有许多行，或者函数内部有大量的读写操作，不单纯是为了计算值，这时也不应该使用箭头函数，而是要使用普通函数，这样可以提高代码可读性。
+
+### 24、函数柯里化
+
+[https://es6.ruanyifeng.com/#docs/function#%E9%80%92%E5%BD%92%E5%87%BD%E6%95%B0%E7%9A%84%E6%94%B9%E5%86%99](https://es6.ruanyifeng.com/#docs/function#递归函数的改写)
+
+柯里化：将多参数的函数转换成单参数的形式，常用于函数式编程。
+
+```javascript
+// es6 实现
+function curry(fn, ...args) {
+  return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
+}
+```
+
+### 25、什么是 XSS 攻击？如何防范 XSS 攻击？
+
+https://juejin.im/post/5bad9140e51d450e935c6d64
+
+1. 概念：XSS攻击是指跨站脚本攻击，是一种代码注入攻击。攻击者通过在网站注入恶意脚本，使之在用户的浏览器上运行，从而盗取用户的信息如 cookie 等。
+
+2. 攻击类型：XSS 一般分为存储型、反射型和 DOM 型。
+
+   存储型：恶意代码提交到了网站的数据库中，当用户请求数据的时候，服务器将其拼接为 HTML 后返回给了用户，从而导致了恶意代码的执行。
+
+   反射型：攻击者构建了特殊的 URL，当服务器接收到请求后，从 URL 中获取数据，拼接到 HTML 后返回，从而导致了恶意代码的执行。
+
+   DOM 型：攻击者构建了特殊的 URL，用户打开网站后，js 脚本从 URL 中获取数据，从而导致了恶意代码的执行。
+
+3. 防范：
+
+   XSS 攻击的预防可以从两个方面入手，一个是恶意代码提交的时候，一个是浏览器执行恶意代码的时候。
+
+   对于第一个方面，如果我们对存入数据库的数据都进行的转义处理，但是一个数据可能在多个地方使用，有的地方可能不需要转义，由于我们没有办法判断数据最后的使用场景，所以直接在输入端进行恶意代码的处理，其实是不太可靠的。
+
+   因此我们可以从浏览器的执行来进行预防，一种是使用纯前端的方式，不用服务器端拼接后返回。另一种是对需要插入到 HTML 中的代码做好充分的转义。对于 DOM 型的攻击，主要是前端脚本的不可靠而造成的，我们对于数据获取渲染和字符串拼接的时候应该对可能出现的恶意代码情况进行判断。
+
+   还有一些方式，比如使用 CSP ，CSP 的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行，从而防止恶意代码的注入攻击。还可以对一些敏感信息进行保护，比如 cookie 使用 http-only ，使得脚本无法获取。也可以使用验证码，避免脚本伪装成用户执行一些操作。
+
+   ps.CSP：https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP
+
+### 26、什么是 CSRF 攻击？如何防范 CSRF 攻击？
+
+1. 概念：CSRF 攻击指的是跨站请求伪造攻击，攻击者诱导用户进入一个第三方网站，然后该网站向被攻击网站发送跨站请求。如果用户在被攻击网站中保存了登录状态，那么攻击者就可以利用这个登录状态，绕过后台的用户验证，冒充用户向服务器执行一些操作。CSRF 攻击的本质是利用了 cookie 会在同源请求中携带发送给服务器的特点，以此来实现用户的冒充。
+
+2. 类型：
+
+   第一种是 GET 类型的 CSRF 攻击，比如在网站中的一个 img 标签里构建一个请求，当用户打开这个网站的时候就会自动发起提交。
+
+   第二种是 POST 类型的 CSRF 攻击，比如说构建一个表单，然后隐藏它，当用户进入页面时，自动提交这个表单。
+
+   第三种是链接类型的 CSRF 攻击，比如说在 a 标签的 href 属性里构建一个请求，然后诱导用户去点击。
+
+3. 防范 ：
+
+   1）同源检测的方法，服务器根据 http 请求头中 origin 或者 referer 信息来判断请求是否为允许访问的站点，从而对请求进行过滤。当 origin 或者 referer 信息都不存在的时候，直接阻止。这种方式的缺点是有些情况下 referer 可以被伪造。还有就是这种方法同时把搜索引擎的链接也给屏蔽了，所以一般网站会允许搜索引擎的页面请求，但是相应的页面请求这种请求方式也可能被攻击者给利用。
+
+   2）使用 CSRF Token 来进行验证，服务器向用户返回一个随机数 Token ，当网站再次发起请求时，在请求参数中加入服务器端返回的 token ，然后服务器对这个 token 进行验证。这种方法解决了使用 cookie 单一验证方式时可能会被冒用的问题，但是这种方法存在一个缺点就是，我们需要给网站中的所有请求都添加上这个 token，操作比较繁琐。还有一个问题是一般不会只有一台网站服务器，如果我们的请求经过负载平衡转移到了其他的服务器，但是这个服务器的 session 中没有保留这个 token 的话，就没有办法验证了。这种情况我们可以通过改变 token 的构建方式来解决。
+
+   3）使用双重 Cookie 验证的办法，服务器在用户访问网站页面时，向请求域名注入一个Cookie，内容为随机字符串，然后当用户再次向服务器发送请求的时候，从 cookie 中取出这个字符串，添加到 URL 参数中，然后服务器通过对 cookie 中的数据和参数中的数据进行比较，来进行验证。使用这种方式是利用了攻击者只能利用 cookie，但是不能访问获取 cookie 的特点。并且这种方法比 CSRF Token 的方法更加方便，并且不涉及到分布式访问的问题。这种方法的缺点是如果网站存在 XSS 漏洞的，那么这种方式会失效。同时这种方式不能做到子域名的隔离。
+
+   4）使用在设置 cookie 属性的时候设置 Samesite ，限制 cookie 不能作为被第三方使用，从而可以避免被攻击者利用。Samesite 一共有两种模式，一种是严格模式，在严格模式下 cookie 在任何情况下都不可能作为第三方 Cookie 使用，在宽松模式下，cookie 可以被请求是 GET 请求，且会发生页面跳转的请求所使用。
+
+   ps. Samesite的拓展阅读：
+
+   Samesite Cookie 表示同站 cookie，避免 cookie 被第三方所利用。
+
+   将 Samesite 设为 strict ，这种称为严格模式，表示这个 cookie 在任何情况下都不可能作为第三方 cookie。
+
+   将 Samesite 设为 Lax ，这种模式称为宽松模式，如果这个请求是个 GET 请求，并且这个请求改变了当前页面或者打开了新的页面，那么这个 cookie 可以作为第三方 cookie，其余情况下都不能作为第三方 cookie。
+
+   使用这种方法的缺点是，因为它不支持子域，所以子域没有办法与主域共享登录信息，每次转入子域的网站，都回重新登录。还有一个问题就是它的兼容性不够好。
+
+### 27、什么是点击劫持？如何防范点击劫持？
+
+点击劫持是一种视觉欺骗的攻击手段，攻击者将需要攻击的网站通过 iframe 嵌套的方式嵌入自己的网页中，并将 iframe 设置为透明，在页面中透出一个按钮诱导用户点击。
+
+可以在 http 相应头中设置 X-FRAME-OPTIONS 来防御用 iframe 嵌套的点击劫持攻击。通过不同的值，可以规定页面在特定的一些情况才能作为 iframe 来使用。
+
+### 28、什么是 MVVM？比之 MVC 有什么区别？什么又是 MVP ？
+
+MVC、MVP 和 MVVM 是三种常见的软件架构设计模式，主要通过分离关注点的方式来组织代码结构，优化我们的开发效率。
+
+比如说我们实验室在以前项目开发的时候，使用单页应用时，往往一个路由页面对应了一个脚本文件，所有的页面逻辑都在一个脚本文件里。页面的渲染、数据的获取，对用户事件的响应所有的应用逻辑都混合在一起，这样在开发简单项目时，可能看不出什么问题，当时一旦项目变得复杂，那么整个文件就会变得冗长，混乱，这样对我们的项目开发和后期的项目维护是非常不利的。
+
+MVC 通过分离 Model、View 和 Controller 的方式来组织代码结构。其中 View 负责页面的显示逻辑，Model 负责存储页面的业务数据，以及对相应数据的操作。并且 View 和 Model 应用了观察者模式，当 Model 层发生改变的时候它会通知有关 View 层更新页面。Controller 层是 View 层和 Model 层的纽带，它主要负责用户与应用的响应操作，当用户与页面产生交互的时候，Controller 中的事件触发器就开始工作了，通过调用 Model 层，来完成对 Model 的修改，然后 Model 层再去通知 View 层更新。
+
+MVP 模式与 MVC 唯一不同的在于 Presenter 和 Controller。在 MVC 模式中我们使用观察者模式，来实现当 Model 层数据发生变化的时候，通知 View 层的更新。这样 View 层和 Model 层耦合在一起，当项目逻辑变得复杂的时候，可能会造成代码的混乱，并且可能会对代码的复用性造成一些问题。MVP 的模式通过使用 Presenter 来实现对 View 层和 Model 层的解耦。MVC 中的Controller 只知道 Model 的接口，因此它没有办法控制 View 层的更新，MVP 模式中，View 层的接口暴露给了 Presenter 因此我们可以在 Presenter 中将 Model 的变化和 View 的变化绑定在一起，以此来实现 View 和 Model 的同步更新。这样就实现了对 View 和 Model 的解耦，Presenter 还包含了其他的响应逻辑。
+
+MVVM 模式中的 VM，指的是 ViewModel，它和 MVP 的思想其实是相同的，不过它通过双向的数据绑定，将 View 和 Model 的同步更新给自动化了。当 Model 发生变化的时候，ViewModel 就会自动更新；ViewModel 变化了，View 也会更新。这样就将 Presenter 中的工作给自动化了。我了解过一点双向数据绑定的原理，比如 vue 是通过使用数据劫持和发布订阅者模式来实现的这一功能。
+
+
+
+MVC：当View中有事件触发了，或者直接影响Controller ，就会调用绑定过的Controller 的函数，Controller 里的函数就会调用Model里的函数，Model内保存的数据改变之后，View也做出相应的变化。但是这种模式导致了VC、VM耦合度高，不利于排错和复用。
+
+ps. MV之间是观察者模式，V在M中注册了，当M改变，才会通知这些注册过的V。
+
+<img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020105.png" alt="img" style="zoom:80%;" />
+
+MVP：与MVC相比，View不依赖Model，可以将View抽离出来做成组件，它只需要提供一系列接口提供给上层（Presenter）操作。当View改变时，触发Presenter里的方法，这些方法会改变Model，然后在Presenter里会把改变后的Model传回给View进行渲染。如图所示的View--》Presenter--》Model--》Presenter--》View。
+
+
+
+<img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020109.png" alt="img" style="zoom:80%;" />
+
+MVVM：MVVM把View和Model的同步逻辑自动化了。以前Presenter负责的View和Model同步不再手动地进行操作，而是交给框架所提供的数据绑定功能进行负责，只需要告诉它View显示的数据对应的是Model哪一部分即可。以Vue.js举例。
+
+Model：data(){ return {...} }  ，仅仅关注数据。
+
+View：通过使用模板语法来声明式的将数据渲染进DOM，当ViewModel对Model进行更新的时候，会通过数据绑定更新到View。
+
+ViewModel：ViewModel大致上就是MVC的Controller和MVP的Presenter了，业务逻辑主要集中在这里，一大核心就是数据绑定。与MVP不同的是，没有了View为Presente提供的接口，之前由Presenter负责的View和Model之间的数据同步交给了ViewModel中的数据绑定进行处理，当Model发生变化，ViewModel就会自动更新；ViewModel变化，Model也会更新。（在Vue.js中的部分就是new Vue()这个对象。）
+
+在Vue.js中，ViewModel数据绑定是用数据劫持&发布-订阅模式的方式实现的。
+
+数据劫持：当你把一个普通的 JavaScript 对象传入 Vue 实例作为 `data` 选项，Vue 将遍历此对象所有的 property，并使用 [`Object.defineProperty`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty) 把这些 property 全部转为 [getter/setter](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Working_with_Objects#定义_getters_与_setters)。`Object.defineProperty` 是 ES5 中一个无法 shim 的特性，这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因。
+
+发布-订阅模式：当data发生改变（发布），订阅它的视图就会作出相应的改变。
+
+具体响应式原理见官网：https://cn.vuejs.org/v2/guide/reactivity.html
+
+双向绑定/MVVM：https://segmentfault.com/a/1190000006599500
+
+<img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020110.png" alt="img" style="zoom:80%;" />
 
 
 
