@@ -704,13 +704,252 @@ ViewModel：ViewModel大致上就是MVC的Controller和MVP的Presenter了，业�
 
 <img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020110.png" alt="img" style="zoom:80%;" />
 
+### 29、什么是 Virtual DOM
 
+Virtual DOM的概念有很多解释，从我的理解来看，主要是三个方面，分别是：一个对象，两个前提，三个步骤。
 
+一个对象指的是Virtual DOM是一个基本的JavaScript对象，也是整个Virtual DOM树的基本。
 
+两个前提分别是JavaScript很快和直接操作DOM很慢，这是Virtual DOM得以实现的两个基本前提。得益于V8引擎的出现，让JavaScript可以高效地运行，在性能上有了极大的提高。直接操作DOM的低效和JavaScript的高效相对比，为Virtual DOM的产生提供了大前提。
 
+三个步骤指的是Virtual DOM的三个重要步骤，分别是：生成Virtual DOM树、对比两棵树的差异、更新视图。
 
+https://github.com/y8n/blog/issues/5
 
+https://www.zhihu.com/question/31809713
 
+### 30、谈谈你对 webpack 的看法
+
+我当时使用 webpack 的一个最主要原因是为了简化页面依赖的管理，并且通过将其打包为一个文件来降低页面加载时请求的资源数。
+
+我认为 webpack 的主要原理是，它将所有的资源都看成是一个模块，并且把页面逻辑当作一个整体，通过一个给定的入口文件，webpack 从这个文件开始，找到所有的依赖文件，将各个依赖文件模块通过 loader 和 plugins 处理后，然后打包在一起，最后输出一个浏览器可识别的 JS 文件。在webpack中一切皆模块。
+
+Webpack 具有四个核心的概念，分别是 Entry（入口）、Output（输出）、loader 和 Plugins（插件）。
+
+Entry 是 webpack 的入口起点，它指示 webpack 应该从哪个模块开始着手，来作为其构建内部依赖图的开始。
+
+Output 属性告诉 webpack 在哪里输出它所创建的打包文件，也可指定打包文件的名称，默认位置为 ./dist。
+
+loader 可以理解为 webpack 的编译器，它使得 webpack 可以处理一些非 JavaScript 文件。在对 loader 进行配置的时候，test 属性，标志有哪些后缀的文件应该被处理，是一个正则表达式。use 属性，指定 test 类型的文件应该使用哪个 loader 进行预处理。常用的 loader 有 css-loader、style-loader 等。
+
+插件可以用于执行范围更广的任务，包括打包、优化、压缩、搭建服务器等等，要使用一个插件，一般是先使用 npm 包管理器进行安装，然后在配置文件中引入，最后将其实例化后传递给 plugins 数组属性。
+
+使用 webpack 的确能够提供我们对于项目的管理，但是它的缺点就是调试和配置起来太麻烦了。但现在 webpack4.0 的免配置一定程度上解决了这个问题。但是我感觉就是对我来说，就是一个黑盒，很多时候出现了问题，没有办法很好的定位。
+
+拓展阅读：
+
+https://juejin.im/post/5afa9cd0f265da0b981b9af9#heading-0
+
+https://juejin.im/entry/5b5724d05188251aa01647fd
+
+### 31、offsetWidth/offsetHeight,clientWidth/clientHeight 与 scrollWidth/scrollHeight 的区别？
+
+clientWidth/clientHeight 返回的是元素的内部宽度，它的值只包含 content + padding，如果有滚动条，不包含滚动条。
+clientTop 返回的是上边框的宽度。
+clientLeft 返回的左边框的宽度。
+
+offsetWidth/offsetHeight 返回的是元素的布局宽度，它的值包含 content + padding + border 包含了滚动条。
+offsetTop 返回的是当前元素相对于其 offsetParent 元素的顶部的距离。
+offsetLeft 返回的是当前元素相对于其 offsetParent 元素的左部的距离。
+
+scrollWidth/scrollHeight 返回值包含 content + padding + 溢出内容的尺寸。
+scrollTop 属性返回的是一个元素的内容垂直滚动的像素数。
+scrollLeft 属性返回的是元素滚动条到元素左边的距离。
+
+http://www.ruanyifeng.com/blog/2009/09/find_element_s_position_using_javascript.html
+
+https://juejin.im/post/5bc9366d5188255c4834e75a
+
+### 32、发布订阅模式与观察者模式
+
+- 观察者模式（Observer Pattern）
+  观察者模式：在观察者模式中，观察者需要直接订阅目标事件；在目标发出内容改变的事件后，直接接收事件并作出响应
+
+  ![image-20200628220856570](C:\Users\Slade Lyanm\AppData\Roaming\Typora\typora-user-images\image-20200628220856570.png)
+
+- 发布订阅模式（Pub-Sub Pattern）
+  其实24种基本的设计模式中并没有发布订阅模式，只是观察者模式的一个别称。
+
+  在现在的发布订阅模式中，称为发布者的消息发送者不会将消息直接发送给订阅者，这意味着发布者和订阅者不知道彼此的存在。在发布者和订阅者之间存在第三个组件，称为消息代理或调度中心或中间件，它维持着发布者和订阅者之间的联系，过滤所有发布者传入的消息并相应地分发它们给订阅者。
+
+  订阅/发布 模式重点是广播外的消息，这个模式并不关心谁接收事件，只管发送事件。
+
+  ![image-20200628220946058](C:\Users\Slade Lyanm\AppData\Roaming\Typora\typora-user-images\image-20200628220946058.png)
+
+https://www.zhihu.com/question/23486749
+
+https://blog.csdn.net/hf872914334/article/details/88899326
+
+### 33、异步编程的实现方式
+
+js 中的异步机制可以分为以下几种：
+
+第一种最常见的是使用回调函数的方式，使用回调函数的方式有一个缺点是，多个回调函数嵌套的时候会造成回调函数地狱，上下两层的回调函数间的代码耦合度太高，不利于代码的可维护。
+
+第二种是 Promise 的方式，使用 Promise 的方式可以将嵌套的回调函数作为链式调用。但是使用这种方法，有时会造成多个 then 的链式调用，可能会造成代码的语义不够明确。
+
+第三种是使用 generator 的方式，它可以在函数的执行过程中，将函数的执行权转移出去，在函数外部我们还可以将执行权转移回来。当我们遇到异步函数执行的时候，将函数执行权转移出去，当异步函数执行完毕的时候我们再将执行权给转移回来。因此我们在 generator 内部对于异步操作的方式，可以以同步的顺序来书写。使用这种方式我们需要考虑的问题是何时将函数的控制权转移回来，因此我们需要有一个自动执行 generator 的机制，比如说 co 模块等方式来实现 generator 的自动执行。
+
+第四种是使用 async 函数的形式，async 函数是 generator 和 promise 实现的一个自动执行的语法糖，它内部自带执行器，当函数内部执行到一个 await 语句的时候，如果语句返回一个 promise 对象，那么函数将会等待 promise 对象的状态变为 resolve 后再继续向下执行。因此我们可以将异步逻辑，转化为同步的顺序来书写，并且这个函数可以自动执行。
+
+### 34、URL 和 URI 的区别？
+
+URI: Uniform Resource Identifier      指的是统一资源标识符
+URL: Uniform Resource Location        指的是统一资源定位符
+URN: Universal Resource Name          指的是统一资源名称
+
+URI 指的是统一资源标识符，用唯一的标识来确定一个资源，它是一种抽象的定义，也就是说，不管使用什么方法来定义，只要能唯一的标识一个资源，就可以称为 URI。
+
+URL 指的是统一资源定位符，URN 指的是统一资源名称。URL 和 URN 是 URI 的子集，URL 可以理解为使用地址来标识资源，URN 可以理解为使用名称来标识资源。
+
+### 35、get 和 post 请求在缓存方面的区别
+
+缓存一般只适用于那些不会更新服务端数据的请求。一般 get 请求都是查找请求，不会对服务器资源数据造成修改，而 post 请求一般都会对服务器数据造成修改，所以，一般会对 get 请求进行缓存，很少会对 post 请求进行缓存。
+
+### 36、mouseover 和 mouseenter 的区别
+
+当鼠标移动到元素上时就会触发 mouseenter 事件，类似 mouseover，它们两者之间的差别是 mouseenter 不会冒泡。
+
+由于 mouseenter 不支持事件冒泡，导致在一个元素的子元素上进入或离开的时候会触发其 mouseover 和 mouseout 事件，但是却不会触发 mouseenter 和 mouseleave 事件。
+
+### 37、剩余参数
+
+function sum(...theArgs) {}
+
+如果函数的最后一个命名参数以`...`为前缀，则它将成为一个由剩余参数组成的真数组，其中从`0`（包括）到`theArgs.length`（排除）的元素由传递给函数的实际参数提供。
+
+https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/rest_parameters
+
+### 38、Proxy与Reflect
+
+1. Proxy：
+
+   Proxy 用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”（meta programming），即对编程语言进行编程。
+
+   Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+
+   ps. Proxy与getter/setter的区别：proxy的功能更加强大。getter/setter只支持读写。
+
+   https://es6.ruanyifeng.com/#docs/proxy
+
+2. Reflect：
+
+   （1） 将`Object`对象的一些明显属于语言内部的方法（比如`Object.defineProperty`），放到`Reflect`对象上。现阶段，某些方法同时在`Object`和`Reflect`对象上部署，未来的新方法将只部署在`Reflect`对象上。也就是说，从`Reflect`对象上可以拿到语言内部的方法。
+
+   （2） 修改某些`Object`方法的返回结果，让其变得更合理。比如，`Object.defineProperty(obj, name, desc)`在无法定义属性时，会抛出一个错误，而`Reflect.defineProperty(obj, name, desc)`则会返回`false`。
+
+   （3） 让`Object`操作都变成函数行为。某些`Object`操作是命令式，比如`name in obj`和`delete obj[name]`，而`Reflect.has(obj, name)`和`Reflect.deleteProperty(obj, name)`让它们变成了函数行为。
+
+   （4）`Reflect`对象的方法与`Proxy`对象的方法一一对应，只要是`Proxy`对象的方法，就能在`Reflect`对象上找到对应的方法。这就让`Proxy`对象可以方便地调用对应的`Reflect`方法，完成默认行为，作为修改行为的基础。也就是说，不管`Proxy`怎么修改默认行为，你总可以在`Reflect`上获取默认行为。
+
+   https://es6.ruanyifeng.com/#docs/reflect
+
+### 39、require 模块引入的查找方式
+
+当 Node 遇到 require(X) 时，按下面的顺序处理。
+
+（1）如果 X 是内置模块（比如 require('http')）
+　　a. 返回该模块。
+　　b. 不再继续执行。
+
+（2）如果 X 以 "./" 或者 "/" 或者 "../" 开头
+　　a. 根据 X 所在的父模块，确定 X 的绝对路径。
+　　b. 将 X 当成文件，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+    	X
+    	X.js
+    	X.json
+   	 X.node
+
+　　c. 将 X 当成目录，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。
+   	 X/package.json（main字段）
+  	  X/index.js
+	    X/index.json
+ 	   X/index.node
+
+（3）如果 X 不带路径
+　　a. 根据 X 所在的父模块，确定 X 可能的安装目录。
+　　b. 依次在每个目录中，将 X 当成文件名或目录名加载。
+
+（4）抛出 "not found"
+
+### 40、什么是Promise
+
+Promise 对象是异步编程的一种解决方案，最早由社区提出。
+
+Promise 是一个构造函数，接收一个函数作为参数，返回一个 Promise 实例。一个 Promise 实例有三种状态，分别是 pending、resolved 和 rejected，分别代表了进行中、已成功和已失败。实例的状态只能由 pending 转变 resolved 或者 rejected 状态，并且状态一经改变，就凝固了，无法再被改变了。状态的改变是通过 resolve() 和 reject() 函数来实现的，我们可以在异步操作结束后调用这两个函数改变 Promise 实例的状态，它的原型上定义了一个 then 方法，使用这个 then 方法可以为两个状态的改变注册回调函数。
+
+Promise也有一些缺点。首先，无法取消Promise，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，Promise内部抛出的错误，不会反应到外部。第三，当处于pending状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
+
+### 41、怎么做 JS 代码 Error 统计
+
+error 统计使用浏览器的 window.error 事件。
+
+### 42、多种模式的解释
+
+1. 单例模式：单例模式保证了全局只有一个实例来被访问。比如说常用的如弹框组件的实现和全局状态的实现。
+2. 策略模式：用来将方法的实现和方法的调用分离开，外部通过不同的参数可以调用不同的策略。
+3. 代理模式：为一个对象提供一个代用品或占位符，以便控制对它的访问。比如说常见的事件代理。
+4. 中介者模式：多个对象通过一个中介者进行交流，而不是直接进行交流，这样能够将通信的各个对象解耦。
+5. 适配器模式：用来解决两个接口不兼容的情况，不需要改变已有的接口，通过包装一层的方式实现两个接口的正常协作。假如我们需要一种新的接口返回方式，但是老的接口由于在太多地方已经使用了，不能随意更改，这个时候就可以使用适配器模式。比如我们需要一种自定义的时间返回格式，但是我们又不能对 js 时间格式化的接口进行修改，这个时候就可以使用适配器模式。
+
+### 43、Vue 的生命周期
+
+https://juejin.im/entry/5aee8fbb518825671952308c
+
+<img src="C:\Users\Slade Lyanm\AppData\Roaming\Typora\typora-user-images\image-20200628231040301.png" alt="image-20200628231040301" style="zoom:80%;" />
+
+注意：
+
+1. created阶段的ajax请求与mounted请求的区别：前者页面视图未出现，如果请求信息过多，页面会长时间处于白屏状态
+2. `mounted` 不会承诺所有的子组件也都一起被挂载。如果你希望等到整个视图都渲染完毕，可以用 [vm.$nextTick](https://cn.vuejs.org/v2/api/#vm-nextTick)
+
+总结：
+
+1）单组件：
+
+1. 初始化组件时，仅执行了beforeCreate/Created/beforeMount/mounted四个钩子函数
+2. 当改变data中定义的变量（响应式变量）时，会执行beforeUpdate/updated钩子函数
+3. 当切换组件（当前组件未缓存）时，会执行beforeDestory/destroyed钩子函数
+4. **初始化和销毁时的生命钩子函数均只会执行一次，beforeUpdate/updated可多次执行**
+
+2）父子组件
+
+1. 仅当子组件完成挂载后，父组件才会挂载
+2. 当子组件完成挂载后，父组件会主动执行一次beforeUpdate/updated钩子函数（仅首次）
+3. 父子组件在data变化中是分别监控的，但是在更新props中的数据是关联的（可实践）
+4. 销毁父组件时，先将子组件销毁后才会销毁父组件
+
+3）兄弟组件
+
+1. 组件的初始化（mounted之前）分开进行，挂载是从上到下依次进行
+2. 当没有数据关联时，兄弟组件之间的更新和销毁是互不关联的
+
+### 44、$route 和 $router 的区别
+
+$route 是“路由信息对象”，包括 path，params，hash，query，fullPath，matched，name 等路由信息参数。
+
+[https://router.vuejs.org/zh/api/#%E8%B7%AF%E7%94%B1%E5%AF%B9%E8%B1%A1](https://router.vuejs.org/zh/api/#路由对象)
+
+$router 是“路由实例”对象包括了路由的跳转方法，钩子函数等。
+
+[https://router.vuejs.org/zh/api/#router-%E5%AE%9E%E4%BE%8B%E5%B1%9E%E6%80%A7](https://router.vuejs.org/zh/api/#router-实例属性)
+
+### 45、Vue Router的钩子
+
+`beforeRouteLeave` `beforeEach` `beforeRouteUpdate` `beforeEnter` `beforeRouteEnter` `beforeResolve`  `afterEach` 
+
+1. 导航被触发。
+2. 在失活的组件里调用 `beforeRouteLeave` 守卫。
+3. 调用全局的 `beforeEach` 守卫。
+4. 在重用的组件里调用 `beforeRouteUpdate` 守卫 (2.2+)。
+5. 在路由配置里调用 `beforeEnter`。
+6. 解析异步路由组件。
+7. 在被激活的组件里调用 `beforeRouteEnter`。
+8. 调用全局的 `beforeResolve` 守卫 (2.5+)。
+9. 导航被确认。
+10. 调用全局的 `afterEach` 钩子。
+11. 触发 DOM 更新。
+12. 用创建好的实例调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数。
 
 ## 二、CSS
 
