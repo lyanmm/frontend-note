@@ -951,7 +951,278 @@ $router 是“路由实例”对象包括了路由的跳转方法，钩子函数
 11. 触发 DOM 更新。
 12. 用创建好的实例调用 `beforeRouteEnter` 守卫中传给 `next` 的回调函数。
 
+### 46、Vue事件修饰符
+
+[https://cn.vuejs.org/v2/guide/events.html#%E4%BA%8B%E4%BB%B6%E4%BF%AE%E9%A5%B0%E7%AC%A6](https://cn.vuejs.org/v2/guide/events.html#事件修饰符)
+
+- **`.stop`**：等同于JavaScript中的`event.stopPropagation()`，防止事件冒泡
+- **`.prevent`**：等同于JavaScript中的`event.preventDefault()`，防止执行预设的行为（如果事件可取消，则取消该事件，而不停止事件的进一步传播）
+- **`.capture`**：与事件冒泡的方向相反，事件捕获由外到内
+- **`.self`**：只会触发自己范围内的事件，不包含子元素
+- **`.once`**：只会触发一次
+- **`.passive`**：告诉浏览器不想阻止事件的默认行为
+
+### 47、Vue 中 mixin 和 mixins 区别
+
+mixin：一般都是Vue.mixin这样用，将一个对象作为全局混入
+
+mixins：一般是在组件内部使用
+
+### 48、常用的Content-Type
+
+1. application/x-www-form-urlencoded：浏览器的原生 form 表单，如果不设置 enctype 属性，那么最终就会以 application/x-www-form-urlencoded 方式提交数据。
+2. multipart/form-data：该种方式也是一个常见的 POST 提交方式，通常表单上传文件时使用该种方式。
+3. application/json：告诉服务器消息主体是序列化后的 JSON 字符串。
+4. text/xml：该种方式主要用来提交 XML 格式的数据。
+
+### 49、判断一个对象是否为空对象
+
+```js
+function checkNullObj(obj) {
+  return Object.keys(obj).length === 0;
+}
+```
+
+### 50、手写 jsonp
+
+```js
+function jsonp(url, params, callback) {
+  // 判断是否含有参数
+  let queryString = url.indexOf("?") === "-1" ? "?" : "&";
+
+  // 添加参数
+  for (var k in params) {
+    if (params.hasOwnProperty(k)) {
+      queryString += k + "=" + params[k] + "&";
+    }
+  }
+
+  // 处理回调函数名
+  let random = Math.random()
+      .toString()
+      .replace(".", ""),
+    callbackName = "myJsonp" + random;
+
+  // 添加回调函数
+  queryString += "callback=" + callbackName;
+
+  // 构建请求
+  let scriptNode = document.createElement("script");
+  scriptNode.src = url + queryString;
+
+  window[callbackName] = function() {
+    // 调用回调函数
+    callback(...arguments);
+
+    // 删除这个引入的脚本
+    document.getElementsByTagName("head")[0].removeChild(scriptNode);
+  };
+
+  // 发起请求
+  document.getElementsByTagName("head")[0].appendChild(scriptNode);
+}
+```
+
+### 51、手写设计模式（观察者、事件派发器、发布订阅...）
+
+https://www.jianshu.com/p/e37ca8369162/
+
+观察者：
+
+```js
+var events = (function() {
+  var topics = {};
+
+  return {
+    // 注册监听函数
+    subscribe: function(topic, handler) {
+      if (!topics.hasOwnProperty(topic)) {
+        topics[topic] = [];
+      }
+      topics[topic].push(handler);
+    },
+
+    // 发布事件，触发观察者回调事件
+    publish: function(topic, info) {
+      if (topics.hasOwnProperty(topic)) {
+        topics[topic].forEach(function(handler) {
+          handler(info);
+        });
+      }
+    },
+
+    // 移除主题的一个观察者的回调事件
+    remove: function(topic, handler) {
+      if (!topics.hasOwnProperty(topic)) return;
+
+      var handlerIndex = -1;
+      topics[topic].forEach(function(item, index) {
+        if (item === handler) {
+          handlerIndex = index;
+        }
+      });
+
+      if (handlerIndex >= 0) {
+        topics[topic].splice(handlerIndex, 1);
+      }
+    },
+
+    // 移除主题的所有观察者的回调事件
+    removeAll: function(topic) {
+      if (topics.hasOwnProperty(topic)) {
+        topics[topic] = [];
+      }
+    }
+  };
+})();
+```
+
+事件派发：
+
+```js
+class EventEmitter {
+  constructor() {
+    this.events = {};
+  }
+
+  on(event, callback) {
+    let callbacks = this.events[event] || [];
+    callbacks.push(callback);
+    this.events[event] = callbacks;
+
+    return this;
+  }
+
+  off(event, callback) {
+    let callbacks = this.events[event];
+    this.events[event] = callbacks && callbacks.filter(fn => fn !== callback);
+
+    return this;
+  }
+
+  emit(event, ...args) {
+    let callbacks = this.events[event];
+    callbacks.forEach(fn => {
+      fn(...args);
+    });
+
+    return this;
+  }
+
+  once(event, callback) {
+    let wrapFun = function(...args) {
+      callback(...args);
+
+      this.off(event, wrapFun);
+    };
+    this.on(event, wrapFun);
+
+    return this;
+  }
+}
+```
+
+待补充...
+
+### 52、闭包
+
+闭包是指有权访问另一个函数作用域中变量的函数，创建闭包的最常见的方式就是在一个函数内创建另一个函数，创建的函数可以访问到当前函数的局部变量。
+
+闭包有两个常用的用途。
+
+闭包的第一个用途是使我们在函数外部能够访问到函数内部的变量。通过使用闭包，我们可以通过在外部调用闭包函数，从而在外部访问到函数内部的变量，可以使用这种方法来创建私有变量。
+
+函数的另一个用途是使已经运行结束的函数上下文中的变量对象继续留在内存中，因为闭包函数保留了这个变量对象的引用，所以这个变量对象不会被回收。
+
+https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
+
 ## 二、CSS
+
+### 1、CSS 盒子模型
+
+盒模型都是由四个部分组成的，分别是margin、border、padding和content。
+
+标准盒模型和IE盒模型的区别在于设置width和height时，所对应的范围不同。
+
+标准盒模型的width和height属性的范围只包含了content；
+
+IE盒模型的width和height属性的范围包含了border、padding和content。
+
+一般来说，我们可以通过修改元素的box-sizing属性来改变元素的盒模型。
+
+### 2、选择器
+
+（1）ID选择器（#myid）
+（2）类选择器（.myclassname）
+（3）元素选择器（div,h1,p）
+（4）后代选择器（h1 p）
+（5）子选择器（ul>li）
+（6）通用兄弟选择器（li~a）
+（7）相邻兄弟选择器（li+a）
+（8）属性选择器（a[rel="external"]）
+（9）伪类选择器（a:hover,li:nth-child）
+（10）伪元素选择器（::before、::after）
+（11）通配符选择器（*）
+
+https://developer.mozilla.org/zh-CN/docs/Web/CSS/:first
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 三、计算机网络
 
