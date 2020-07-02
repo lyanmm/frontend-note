@@ -519,7 +519,7 @@ Unicode 和 UTF-8的关系：UTF-8 是 Unicode 的实现方式之一
    // 浅拷贝的实现;
    function shallowCopy(object) {
      // 只拷贝对象
-     if (!object || typeof object !== &quot;object&quot;) return;
+     if (!object || typeof object !== object) return;
      // 根据 object 的类型判断是新建一个数组还是对象
      let newObject = Array.isArray(object) ? [] : {};
      // 遍历 object，并且判断是 object 的属性才拷贝
@@ -533,12 +533,12 @@ Unicode 和 UTF-8的关系：UTF-8 是 Unicode 的实现方式之一
    
    // 深拷贝的实现;
    function deepCopy(object) {
-     if (!object || typeof object !== &quot;object&quot;) return;
+     if (!object || typeof object !== object) return;
      let newObject = Array.isArray(object) ? [] : {};
      for (let key in object) {
        if (object.hasOwnProperty(key)) {
          newObject[key] =
-           typeof object[key] === &quot;object&quot; ? deepCopy(object[key]) : object[key];
+           typeof object[key] === object ? deepCopy(object[key]) : object[key];
        }
      }
      return newObject;
@@ -1138,6 +1138,10 @@ https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures
 
 ## 二、CSS
 
+### 0、命名规范
+
+https://www.zhihu.com/question/19586885
+
 ### 1、CSS 盒子模型
 
 盒模型都是由四个部分组成的，分别是margin、border、padding和content。
@@ -1150,6 +1154,8 @@ IE盒模型的width和height属性的范围包含了border、padding和content�
 
 一般来说，我们可以通过修改元素的box-sizing属性来改变元素的盒模型。
 
+https://developer.mozilla.org/zh-CN/docs/Web/CSS/box-sizing
+
 ### 2、选择器
 
 （1）ID选择器（#myid）
@@ -1160,67 +1166,424 @@ IE盒模型的width和height属性的范围包含了border、padding和content�
 （6）通用兄弟选择器（li~a）
 （7）相邻兄弟选择器（li+a）
 （8）属性选择器（a[rel="external"]）
-（9）伪类选择器（a:hover,li:nth-child）
-（10）伪元素选择器（::before、::after）
+（9）伪类（a:hover,li:nth-child）
+（10）伪元素（::before、::after）
 （11）通配符选择器（*）
 
 https://developer.mozilla.org/zh-CN/docs/Web/CSS/:first
 
+### 3、::before 和:after 中双冒号和单冒号有什么区别？解释一下这 2 个伪元素的作用。
+
+在css3中使用单冒号来表示伪类，用双冒号来表示伪元素。但是为了兼容已有的伪元素的写法，在一些浏览器中也可以使用单冒号
+来表示伪元素。
+
+伪类一般匹配的是元素的一些特殊状态，如hover、link等，而伪元素一般匹配的特殊的位置，比如after、before等。
+
+### 4、伪类和伪元素的区别
+
+css引入伪类和伪元素概念是为了格式化文档树以外的信息。也就是说，伪类和伪元素是用来修饰不在文档树中的部分，比如，一句
+话中的第一个字母，或者是列表中的第一个元素。
+
+伪类用于当已有的元素处于某个状态时，为其添加对应的样式，这个状态是根据用户行为而动态变化的。比如说，当用户悬停在指定的
+元素时，我们可以通过:hover来描述这个元素的状态。
+
+伪元素用于创建一些不在文档树中的元素，并为其添加样式。它们允许我们为元素的某些部分设置样式。比如说，我们可以通过::be
+fore来在一个元素前增加一些文本，并为这些文本添加样式。虽然用户可以看到这些文本，但是这些文本实际上不在文档树中。
+
+有时你会发现伪元素使用了两个冒号（::）而不是一个冒号（:）。这是CSS3的一部分，并尝试区分伪类和伪元素。大多数浏览
+器都支持这两个值。按照规则应该使用（::）而不是（:），从而区分伪类和伪元素。但是，由于在旧版本的W3C规范并未对此进行
+特别区分，因此目前绝大多数的浏览器都支持使用这两种方式表示伪元素。
+
+最后，伪类与伪元素的区别在于：有没有创建一个文档树之外的元素。
+
+http://www.alloyteam.com/2016/05/summary-of-pseudo-classes-and-pseudo-elements/
+
+<img src="http://www.alloyteam.com/wp-content/uploads/2016/05/%E4%BC%AA%E7%B1%BB.png" alt="伪类" style="zoom:80%;" />
+
+<img src="http://www.alloyteam.com/wp-content/uploads/2016/05/%E4%BC%AA%E5%85%83%E7%B4%A0.png" alt="伪元素" style="zoom:80%;" />
+
+
+
+### 5、有哪些属性可以继承
+
+一般具有继承性的属性有，字体相关的属性，font-size和font-weight等。文本相关的属性，color和text-align等。
+表格的一些布局属性、列表属性如list-style等。还有光标属性cursor、元素可见性visibility。
+
+当一个属性不是继承属性的时候，我们也可以通过将它的值设置为inherit来使它从父元素那获取同名的属性值来继承。
+
+ps. 简洁记忆：一般只有文字的属性能够继承，盒子的属性不能继承。
+文字属性：color、 font- 系列、line- 系列、text- 系列。
+盒子属性：background- 系列、width、 height、 border- 系列、浮动、定位等。
+
+### 6、CSS 优先级算法
+
+CSS的优先级是根据样式声明的特殊性值来判断的。
+
+选择器的特殊性值分为四个等级，如下：
+
+（1）标签内选择器x,0,0,0
+（2）ID选择器0,x,0,0
+（3）类选择器/属性选择器/伪类0,0,x,0
+（4）元素选择器和伪元素0,0,0,x
+
+计算方法：
+
+（1）每个等级的初始值为0
+（2）每个等级的叠加为选择器出现的次数相加
+（3）不可进位，比如0,99,99,99 
+（4）依次表示为：0,0,0,0
+（5）每个等级计数之间没关联
+（6）等级判断从左向右，如果某一位数值相同，则判断下一位数值
+（7）如果两个优先级相同，则最后出现的优先级高，!important也适用
+（8）通配符选择器的特殊性值为：0,0,0,0
+（9）继承样式优先级最低，通配符样式优先级高于继承样式
+（10）!important（权重），它没有特殊性值，但它的优先级是最高的，为了方便记忆，可以认为它的特殊性值为1,0,0,0,0。
+
+计算实例：
+
+a{color: yellow;} /*特殊性值：0,0,0,1*/
+div a{color: green;} /*特殊性值：0,0,0,2*/
+.demo a{color: black;} /*特殊性值：0,0,1,1*/
+.demo input[type="text"]{color: blue;} /*特殊性值：0,0,2,1*/
+.demo \*[type="text"]{color: grey;}    /*特殊性值：0,0,2,0/*
+
+#demo a{color: orange;}  /*特殊性值：0,1,0,1*/
+div#demo a{color: red;}   /*特殊性值：0,1,0,2*/
+
+注意：
+（1）样式应用时，css会先查看规则的权重（!important），加了权重的优先级最高，当权重相同的时候，会比较规则的特殊性。
+
+（2）特殊性值越大的声明优先级越高。
+
+（3）相同特殊性值的声明，根据样式引入的顺序，后声明的规则优先级高（距离元素出现最近的）
+
+（4） 部分浏览器由于字节溢出问题出现的进位表现不做考虑
+
+<img src="C:\Users\Slade Lyanm\AppData\Roaming\Typora\typora-user-images\image-20200702160434633.png" alt="image-20200702160434633" style="zoom:67%;" />
+
+### 7、如何居中 div
+
+一般常见的几种居中的方法有：
+
+对于宽高固定的元素
+
+（1）我们可以利用margin:0 auto来实现元素的水平居中。
+
+（2）利用绝对定位，设置四个方向的值都为0，并将margin设置为auto，由于宽高固定，因此对应方向实现平分，可以实现水平和垂直方向上的居中。
+
+（3）利用绝对定位，先将元素的左上角通过top:50%和left:50%定位到页面的中心，然后再通过margin负值来调整元素的中心点到页面的中心。
+
+（4）利用绝对定位，先将元素的左上角通过top:50%和left:50%定位到页面的中心，然后再通过translate来调整元素的中心点到页面的中心。
+
+（5）使用flex布局，通过align-items:center和justify-content:center设置容器的垂直和水平方向上为居中对齐，然后它的子元素也可以实现垂直和水平的居中。
+
+对于宽高不定的元素，上面的后面两种方法，可以实现元素的垂直和水平的居中。
+
+### 8、display 有哪些值？说明他们的作用。
+
+block	块类型。默认宽度为父元素宽度，可设置宽高，换行显示。
+none	元素不显示，并从文档流中移除。
+inline	行内元素类型。默认宽度为内容宽度，不可设置宽高，同行显示。
+inline-block默认宽度为内容宽度，可以设置宽高，同行显示。
+list-item	像块类型元素一样显示，并添加样式列表标记。
+table	此元素会作为块级表格来显示。
+inherit	规定应该从父元素继承display属性的值。
+flex	子元素开启flex布局
+
+### 9、position 的值 relative 和 absolute 定位原点
+
+1. absolute：生成绝对定位的元素，相对于值不为 static的第一个父元素进行定位。
+2. fixed （老IE不支持）： 生成绝对定位的元素，相对于浏览器窗口进行定位。
+3. relative：生成相对定位的元素，相对于其正常位置进行定位。
+4. static：默认值。没有定位，元素出现在正常的流中（忽略 top, bottom, left, right z-index 声明）。
+5. inherit：规定从父元素继承 position 属性的值。
+
+### 10、Flex布局
+
+http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
+
+http://www.ruanyifeng.com/blog/2015/07/flex-examples.html
+
+1. 采用 Flex 布局的元素，称为 Flex 容器（flex container），简称"容器"。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称"项目"。容器默认存在两根轴：水平的主轴（main axis）和垂直的交叉轴（cross axis）。
+
+2. 容器属性：
+
+   ~为默认值
+
+   ```css
+   flex-direction: row~ | row-reverse | column | column-reverse;/* 默认：从左到右，从上到下*/
+   ```
+
+   ```css
+   flex-wrap: nowrap~ | wrap/*换行，第一行在上方*/ | wrap-reverse;/*换行，第一行在下方*/
+   ```
+
+   ```css
+   flex-flow: <flex-direction> || <flex-wrap>;
+   /* flex-flow属性是flex-direction属性和flex-wrap属性的简写形式，默认值为row nowrap。 */
+   ```
+
+   ```css
+   justify-content: flex-start~ | flex-end | center | space-between | space-around;
+   ```
+
+   ```css
+   align-items: flex-start | flex-end | center | baseline（项目的第一行文字的基线对齐） 
+   			| stretch~（意为伸展，占满容器整个高度）;
+   ```
+
+   ```css
+   align-content: flex-start | flex-end | center | space-between | space-around | stretch~;
+   /* 定义了多根轴线的对齐方式。如果项目只有一根轴线，该属性不起作用。 */
+   ```
+
+   ​							align-content：
+
+<img src="http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071012.png" alt="img" style="zoom:67%;" />
 
 
 
 
 
+3. 项目属性：
 
+   ~为默认值
 
+   ```css
+   order: <integer>;
+   
+   /* 项目的排列顺序。数值越小，排列越靠前，默认为0。 */
+   ```
 
+   ```css
+   flex-grow: <number>; /* default 0 */
+   
+   /* 项目的放大比例，默认为0，即如果存在剩余空间，也不放大。 */
+   /* 如果所有项目的flex-grow属性都为1，则它们将等分剩余空间（如果有的话）。如果一个项目的flex-grow属性为2，其他项目都为1，则前者占据的剩余空间将比其他项多一倍。 */
+   ```
 
+   ```css
+   flex-shrink: <number>; /* default 1 */
+   
+   /* 如果所有项目的flex-shrink属性都为1，当空间不足时，都将等比例缩小。如果一个项目的flex-shrink属性为0，其他项目都为1，则空间不足时，前者不缩小。负值对该属性无效。 */
+   ```
 
+   ```css
+   flex-basis: <length> | auto; /* default auto */
+   
+   /* flex-basis属性定义了在分配多余空间之前，项目占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为auto，即项目的本来大小。它可以设为跟width或height属性一样的值（比如350px），则项目将占据固定空间。 */
+   ```
 
+   ```css
+   flex: none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]
+   
+   /* flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。后两个属性可选。 */
+   /* 该属性有两个快捷值：auto (1 1 auto) 和 none (0 0 auto)。
+   建议优先使用这个属性，而不是单独写三个分离的属性，因为浏览器会推算相关值。 */
+   ```
 
+   ```css
+   align-self: auto~ | flex-start | flex-end | center | baseline | stretch;
+   
+   /* align-self属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性。默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。 */
+   /* 该属性可能取6个值，除了auto，其他都与align-items属性完全一致 */
+   ```
 
+### 11、圣杯布局
 
+圣杯布局（Holy Grail Layout）指的是一种最常见的网站布局。页面从上到下，分成三个部分：头部（header），躯干（body），尾部（footer）。其中躯干又水平分成三栏，从左到右为：导航、主栏、副栏。
 
+可以用Flex布局快速实现。
 
+![img](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015071323.png)
 
+### 12、网格布局
 
+http://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html
 
+1. 概念：采用网格布局的区域，称为"容器"（container）。容器内部采用网格定位的子元素，称为"项目"（item）。正常情况下n行和m列会产生n x m个单元格。比如，3行3列会产生9个单元格；n行有n + 1根水平网格线，m列有m + 1根垂直网格线，比如三行就有四根水平网格线。
 
+2. 容器属性：
 
+   ```css
+   display: grid | inline-grid;
+   /* 设为网格布局以后，容器子元素（项目）的float、display: inline-block、display: table-cell、vertical-align和column-*等设置都将失效。 */
+   ```
 
+![img](https://www.wangbase.com/blogimg/asset/201903/bg2019032504.png)![img](https://www.wangbase.com/blogimg/asset/201903/bg2019032505.png)
 
+​	详情看网址
 
+### 13、多列等高
 
+1. 利用flex布局中项目align-items属性默认为stretch，如果项目未设置高度或设为auto，将占满整个容器的高度
+   的特性，来实现多列等高。
+2. 子元素设置的padding-bottom尽可能大一些，并且需要设置一样大小的margin-bottom负值去抵消padding-bottom撑大的区域，正负一抵消，对于页面布局不会有影响。另外的话还需要设置父元素overflow：hidden把子元素多出来的色块背景隐藏掉。
+3. grid布局。
 
+### 14、li 与 li 之间有看不见的空白间隔是什么原因引起的
 
+浏览器会把inline元素间的空白字符（空格、换行、Tab等）渲染成一个空格。而为了美观。我们通常是一个<li>放在一行，
+这导致\<li>换行后产生换行字符，它变成一个空格，占用了一个字符的宽度。
 
+### 15、什么是包含块，对于包含块的理解
 
+包含块（containingblock）就是元素用来计算和定位的一个框。
 
+（1）根元素（很多场景下可以看成是\<html>）被称为“初始包含块”，其尺寸等同于浏览器可视窗口的大小。
 
+（2）对于其他元素，如果该元素的position是relative或者static，则“包含块”由其最近的块容器祖先盒的content box边界形成。
 
+（3）如果元素position:fixed，则“包含块”是“初始包含块”。
 
+（4）如果元素position:absolute，则“包含块”由最近的position不为static的祖先元素建立，具体方式如下：
 
+​	如果该祖先元素是纯inline元素，则规则略复杂：
 
+​	• 假设给内联元素的前后各生成一个宽度为0的内联盒子（inline box），则这两个内联盒子的paddingbox外面的包围盒就是内联元素的“包含块”；
 
+​	• 如果该内联元素被跨行分割了，那么“包含块”是未定义的，也就是CSS2.1规范并没有明确定义，浏览器自行发挥，否则，“包含块”由该祖先的paddingbox边界形成。
 
+​	• 如果没有符合条件的祖先元素，则“包含块”是“初始包含块”。
 
+### 16、width:auto 和 width:100%的区别
 
+width:100%会使元素box的宽度等于父元素的contentbox的宽度。
 
+width:auto会使元素撑满整个父元素，margin、border、padding、content区域会自动分配水平空间。
 
+### 17、绝对定位元素与非绝对定位元素的百分比计算的区别
 
+绝对定位元素的宽高百分比是相对于临近的position不为static的祖先元素的padding box来计算的。
 
+非绝对定位元素的宽高百分比则是相对于父元素的content box来计算的。
 
+### 18、Base64
 
+1. 概念：base64编码是一种图片处理格式，通过特定的算法将图片编码成一长串字符串，在页面上显示的时候，可以用该字符串来代替图片的url属性。
 
+2. 优点：减少一个图片的HTTP请求
 
+3. 缺点：
 
+   1）编码后的大小会比原文件大小大1/3，造成文件体积的增加，影响文件加载速度，增加浏览器对html或css文件解析渲染的时间。
 
+   2）兼容性的问题，ie8以前的浏览器不支持。
 
+### 19、'display'、'position'和'float'的相互关系
 
+![display_float_position](C:\Users\Slade Lyanm\Desktop\display_float_position.png)
 
+### 20、BFC（块级格式化上下文：Block Formatting Context）的理解
 
+https://segmentfault.com/a/1190000013647777
 
+https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context
 
+BFC 是一个独立的布局环境,可以理解为一个容器,在这个容器中按照一定规则进行物品摆放,并且不会影响其它环境中的物品。
+如果一个元素符合触发 BFC 的条件，则 BFC 中的元素布局不受外部影响。
+浮动元素会创建 BFC，则浮动元素内部子元素主要受该浮动元素影响，所以两个浮动元素之间是互不影响的。
+
+创建BFC的方法：
+
+1. 根元素或包含根元素的元素
+2. 浮动元素 float ＝ left | right 或 inherit（≠ none）
+3. 绝对定位元素 position ＝ absolute 或 fixed
+4. display ＝ inline-block | flex | inline-flex | table-cell 或 table-caption
+5. overflow ＝ hidden | auto 或 scroll (≠ visible)
+
+### 21、IFC（行级格式化上下文：Inline Formatting Context）
+
+在IFC中，盒子水平放置，一个接着一个，从包含块的顶部开始。
+
+1. 内部的盒子会在水平方向，一个个地放置；
+2. IFC的高度，由里面最高盒子的高度决定；
+3. 当一行不够放置的时候会自动切换到下一行；
+
+### 22、HTML 的文档/标准流（Normal flow）和文本流（Text flow）分别是什么
+
+文档流是相对于盒子模型讲的。
+文本流是相对于文字段落讲的。
+元素浮动之后，会让它跳出文档流，也就是说当它后面还有元素时，其他元素会无视它所占据了的区域，直接在它身上布局。但是文字却会认同浮动元素所占据的区域，围绕它布局，也就是没有拖出文本流。
+但是绝对定位后，不仅元素盒子会拖出文档流，文字也会出文本流。那么后面元素的文本就不会在认同它的区域位置，会直接在它后面布局，不会在环绕。
+当然你可以使用 index-z 来让底部的元素到上面来，类似于一个图层的概念。
+
+文档流：https://www.jianshu.com/p/ccbe15f7a6d4
+
+### 23、display 有哪些值，分别什么作用
+
+block	块类型。默认宽度为父元素宽度，可设置宽高，换行显示。
+none	元素不显示，并从文档流中移除。
+inline	行内元素类型。默认宽度为内容宽度，不可设置宽高，同行显示。
+inline-block默认宽度为内容宽度，可以设置宽高，同行显示。
+list-item	像块类型元素一样显示，并添加样式列表标记。
+table	此元素会作为块级表格来显示。
+inherit	规定应该从父元素继承display属性的值。
+
+### 24、浏览器兼容问题
+
+（1）png24位的图片在iE6浏览器上出现背景。
+解决方案：做成PNG8，也可以引用一段脚本处理。
+
+（2）浏览器默认的margin和padding不同。
+解决方案：加一个全局的*{margin:0;padding:0;}来统一。
+
+（3）IE6双边距bug：在IE6下，如果对元素设置了浮动，同时又设置了margin-left或margin-right，margin值会加倍。
+
+#box{float:left;width:10px;margin:00010px;}
+
+这种情况之下IE会产生20px的距离。
+解决方案：在float的标签样式控制中加入\_display:inline;将其转化为行内属性。(_这个符号只有ie6会识别)
+
+（4）渐进识别的方式，从总体中逐渐排除局部。首先，巧妙的使用"\9"这一标记，将IE游览器从所有情况中分离出来。接着，再次使用"+"将IE8和IE7、IE6分离开来，这样IE8已经独立识别。
+.bb{
+background-color:#f1ee18;/*所有识别*/
+.background-color:#00deff\9;/*IE6、7、8识别*/
++background-color:#a200ff;/*IE6、7识别*/
+_background-color:#1e0bd1;/*IE6识别*/
+}
+
+（5）IE下，可以使用获取常规属性的方法来获取自定义属性，也可以使用getAttribute()获取自定义属性；Firefox下，只能使用getAttribute()获取自定义属性。
+解决方法：统一通过getAttribute()获取自定义属性。
+
+（6）IE下，event对象有x、y属性，但是没有pageX、pageY属性;Firefox下，event对象有pageX、pageY属性，但是没有x、y属性。
+解决方法：（条件注释）缺点是在IE浏览器下可能会增加额外的HTTP请求数。
+
+（7）Chrome中文界面下默认会将小于12px的文本强制按照12px显示
+解决方法：
+
+1.可通过加入CSS属性-webkit-text-size-adjust:none;解决。但是，在chrome更新到27版本之后就不可以用了。
+
+2.还可以使用-webkit-transform:scale(0.5);注意-webkit-transform:scale(0.75);
+收缩的是整个span的大小，这时候，必须要将span转换成块元素，可以使用display：block/inline-block/...；
+
+（8）超链接访问过后hover样式就不出现了，被点击访问过的超链接样式不再具有hover和active了。
+解决方法：改变CSS属性的排列顺序L-V-H-A
+
+（9）怪异模式问题：漏写DTD声明，Firefox仍然会按照标准模式来解析网页，但在IE中会触发怪异模式。为避免怪异模式给我们带来不必要的麻烦，最好养成书写DTD声明的好习惯。
+
+### 25、margin 重叠问题
+
+margin重叠指的是在垂直方向上，两个相邻元素的margin发生重叠的情况。
+
+一般来说可以分为四种情形：
+
+第一种是相邻兄弟元素的margin-bottom和margin-top的值发生重叠。这种情况下我们可以通过设置其中一个元素为BFC来解决。
+
+第二种是父元素的margin-top和子元素的margin-top发生重叠。它们发生重叠是因为它们是相邻的，所以我们可以通过这一点来解决这个问题。我们可以为父元素设置border-top、padding-top值来分隔它们，当然我们也可以将父元素设置为BFC来解决。
+
+第三种是高度为auto的父元素的margin-bottom和子元素的margin-bottom发生重叠。它们发生重叠一个是因为它们相邻，一个是因为父元素的高度不固定。因此我们可以为父元素设置border-bottom、padding-bottom来分隔它们，也可以为父元素设置一个高度，max-height和min-height也能解决这个问题。当然将父元素设置为BFC是最简单的方法。
+
+第四种情况，是没有内容的元素，自身的margin-top和margin-bottom发生的重叠。我们可以通过为其设置border、padding或者高度来解决这个问题。
+
+ps. 一些具体方法：
+
+1. 外层  padding
+2. 透明边框  border:1px solid transparent;
+3. 绝对定位  postion:absolute:
+4. 外层DIV  overflow:hidden;
+5. 内层DIV加  float:left;display:inline;
+6. 外层DIV有时会用到  zoom:1;
 
 
 
