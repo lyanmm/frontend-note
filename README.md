@@ -1,4 +1,4 @@
-# front-end-note
+# frontend-note
 
 ### 文件名归类：
 
